@@ -1,0 +1,54 @@
+x<-runif(100,0,1)
+y<-sin(2*pi*x)+rnorm(100,mean=0,sd=1)
+plot(x,y)
+
+min<-min(x)
+max<-max(x)
+n<-length(y)
+
+h<-0.06*(max - min)
+
+ngrid<-100
+xgrid<-1:ngrid
+d<-(max - min)/ngrid
+for(i in 1:ngrid)
+	{
+	xgrid[i] = min + d * i
+	}
+
+mhat<-1:ngrid
+
+for(i in 1:ngrid)
+	{
+	a<-matrix(0,2,2)
+	b<-c(0,0)
+
+	for(l in 1:n)
+		{
+		cc<-x[l] - xgrid[i]
+
+		if(abs(cc) < h)
+			{
+			k<-(1 - cc * cc / h / h)
+
+			a[1,1] <- a[1,1] + k
+
+			a[1,2] <- a[1,2] + cc * k
+
+			a[2,2] <- a[2,2] + cc * cc * k
+
+			b[1] <- b[1] + k * y[l]
+
+			b[2] <- b[2] + k * cc * y[l]
+			}
+		}
+
+	a[2,1]<-a[1,2]
+
+	mhat[i]<-solve(a, b)[1]
+	}
+
+lines(xgrid, mhat, type="l")
+par(new=TRUE)
+lines(xgrid,sin(2*pi*xgrid),col="blue",type="l")
+plot(x, y)
